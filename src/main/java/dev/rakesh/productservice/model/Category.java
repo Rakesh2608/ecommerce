@@ -1,16 +1,17 @@
 package dev.rakesh.productservice.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Category {
+public class Category extends BaseModel{
     private String name;
     private String description;
     private List<Product> products;
+
+
 }
