@@ -2,8 +2,9 @@ package dev.rakesh.productservice.controllers;
 
 import dev.rakesh.productservice.dtos.GetSingleProductResponseDto;
 import dev.rakesh.productservice.dtos.ProductRequestDto;
+import dev.rakesh.productservice.dtos.ProductResponseDto;
+import dev.rakesh.productservice.exceptions.NotFoundException;
 import dev.rakesh.productservice.model.Product;
-import dev.rakesh.productservice.services.FakeStoreProductServiceImpl;
 import dev.rakesh.productservice.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,9 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/products")
@@ -26,23 +27,26 @@ public class ProductController {
 //   }
 
     @GetMapping
-    public List<Product> getAllProducts() {
-        return  productService.getAllProducts();
+    public List<ProductResponseDto> getAllProducts() {
+        return productService.getAllProducts();
 
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<GetSingleProductResponseDto> getProductById(@PathVariable("productId") Long productId) {
+    public ResponseEntity<GetSingleProductResponseDto> getProductById(@PathVariable("productId") Long productId) throws NotFoundException {
         //GetSingleProductResponseDto getSingleProductResponseDto=new GetSingleProductResponseDto();
-        MultiValueMap<String,String> headers=new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add(
-                "auth-token","no-access"
+                "auth-token", "no-access"
         );
 
-        ResponseEntity<GetSingleProductResponseDto> responseEntity=new
-                ResponseEntity(productService.getProductById(productId),headers,HttpStatus.OK);
-
-
+        Optional<Product> product=productService.getProductById(productId);
+        if(product.isEmpty()){
+            throw new NotFoundException("No product found with productId:"+productId);
+        }
+        ResponseEntity<GetSingleProductResponseDto> responseEntity = new
+                ResponseEntity(product,
+                headers, HttpStatus.OK);
         return responseEntity;
 
     }
@@ -63,15 +67,16 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody ProductRequestDto productRequestDto) {
-        ResponseEntity<Product> productResponseEntity=new
-                ResponseEntity<>(productService.createProduct(productRequestDto),HttpStatus.OK);
+        ResponseEntity<Product> productResponseEntity = new
+                ResponseEntity<>(productService.createProduct(productRequestDto), HttpStatus.OK);
 
         return productResponseEntity;
     }
 
-    @PutMapping("/{productId}")
-    public String updateProduct(@PathVariable("productId") Long productId, ProductRequestDto newProductRequestDto) {
-        return "updated a single product";
+    @PatchMapping("/{productId}")
+    public ResponseEntity<Product> updateProduct(@PathVariable("productId") Long productId, @RequestBody ProductRequestDto newProductRequestDto) {
+        ResponseEntity<Product> responseEntity = new ResponseEntity<>(productService.updateProduct(productId, newProductRequestDto), HttpStatus.OK);
+        return responseEntity;
     }
 
     @DeleteMapping("/{productId}")
