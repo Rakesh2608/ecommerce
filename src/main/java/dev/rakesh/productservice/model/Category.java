@@ -10,8 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Category extends BaseModel{
     private String name;
-    private String description;
-    private List<Product> products;
-
+    //private String description;
+    //private List<Product> products;
 
 }
