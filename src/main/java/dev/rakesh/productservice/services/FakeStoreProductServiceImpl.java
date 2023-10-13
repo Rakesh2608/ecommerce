@@ -1,6 +1,7 @@
 package dev.rakesh.productservice.services;
 
 import dev.rakesh.productservice.client.fakestoreproductapi.FakeStoreProductClient;
+import dev.rakesh.productservice.dtos.CreateProductDto;
 import dev.rakesh.productservice.dtos.ProductRequestDto;
 import dev.rakesh.productservice.model.Category;
 import dev.rakesh.productservice.model.Product;
@@ -79,22 +80,22 @@ public class FakeStoreProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product createProduct(ProductRequestDto productRequestDto) {
+    public Product createProduct(CreateProductDto createProductDto) {
 //        RestTemplate restTemplate = restTemplateBuilder.build();
 //        ResponseEntity<ProductRequestDto> responseEntity = restTemplate.postForEntity(
 //                "https://fakestoreapi.com/products", productRequestDto,
 //                ProductRequestDto.class);
 //        ProductRequestDto productDto = responseEntity.getBody();
 
-        ProductRequestDto productDto = fakeStoreProductClient.createProduct(productRequestDto);
-        assert productDto != null;
-        return ConvertProductFromDto(productDto);
+        CreateProductDto productDto = fakeStoreProductClient.createProduct(createProductDto);
+        return getProductFromCreateDto(productDto);
+        
 
     }
 
 
     @Override
-    public Product updateProduct(Long productId, ProductRequestDto newProductRequestDto) {
+    public Product updateProduct(Long productId, CreateProductDto newProductRequestDto) {
 //        RestTemplate restTemplate = restTemplateBuilder.build();
 //        Using Generic requestEntity
 //        ResponseEntity<ProductRequestDto> responseEntity=requestForEntity(
@@ -106,15 +107,35 @@ public class FakeStoreProductServiceImpl implements ProductService {
 //                "https://fakestoreapi.com/products/{id}",
 //                newProductRequestDto,ProductRequestDto.class,productId);
 
-        ProductRequestDto productRequestDto = fakeStoreProductClient.updateProduct(productId, newProductRequestDto);
-        return ConvertProductFromDto(productRequestDto);
+        CreateProductDto productDto = fakeStoreProductClient.updateProduct(productId, newProductRequestDto);
+        return getProductFromCreateDto(productDto);
 
     }
+
 
     @Override
-    public boolean deleteProduct(Long productId) {
-        return false;
+    public ProductRequestDto deleteProduct(Long productId) {
+        ProductRequestDto productRequestDto = fakeStoreProductClient.deleteProduct(productId);
+
+        return productRequestDto;
     }
+
+
+    private Product getProductFromCreateDto(CreateProductDto productDto) {
+        assert productDto != null;
+        Product product = new Product();
+        product.setId(productDto.getId());
+        product.setTitle(productDto.getTitle());
+        product.setPrice(productDto.getPrice());
+        product.setDescription(productDto.getDescription());
+        product.setImageUrl(productDto.getImage());
+        Category category = new Category();
+        category.setName(productDto.getCategory());
+        product.setCategory(category);
+
+        return product;
+    }
+    
 
     private Product ConvertProductFromDto(ProductRequestDto productRequestDto) {
         Product product = new Product();

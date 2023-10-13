@@ -1,5 +1,6 @@
 package dev.rakesh.productservice.controllers;
 
+import dev.rakesh.productservice.dtos.CreateProductDto;
 import dev.rakesh.productservice.dtos.GetSingleProductResponseDto;
 import dev.rakesh.productservice.dtos.ProductRequestDto;
 import dev.rakesh.productservice.dtos.ProductResponseDto;
@@ -83,22 +84,39 @@ public class ProductController {
 //    }
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody ProductRequestDto productRequestDto) {
+    public ResponseEntity<Product> createProduct(
+            @RequestBody CreateProductDto newProductRequestDto) {
         ResponseEntity<Product> productResponseEntity = new
-                ResponseEntity<>(productService.createProduct(productRequestDto), HttpStatus.OK);
+                ResponseEntity<>(productService.createProduct(newProductRequestDto), HttpStatus.OK);
 
         return productResponseEntity;
     }
 
     @PatchMapping("/{productId}")
-    public ResponseEntity<Product> updateProduct(@PathVariable("productId") Long productId, @RequestBody ProductRequestDto newProductRequestDto) {
-        ResponseEntity<Product> responseEntity = new ResponseEntity<>(productService.updateProduct(productId, newProductRequestDto), HttpStatus.OK);
+    public ResponseEntity<Product> updateProduct(
+            @PathVariable("productId") Long productId,
+            @RequestBody CreateProductDto productRequestDto) throws NotFoundException {
+
+        Optional<Product> product=productService.getProductById(productId);
+        if(product.isEmpty()){
+            throw new NotFoundException("No product found with productId:"+productId);
+        }
+
+        ResponseEntity<Product> responseEntity = new ResponseEntity<>(
+                productService.updateProduct(productId, productRequestDto),
+                HttpStatus.OK);
         return responseEntity;
     }
 
     @DeleteMapping("/{productId}")
-    public String deleteProduct(@PathVariable("productId") Long productId) {
-        return "deleted a single product";
+    public ResponseEntity<ProductRequestDto> deleteProduct(@PathVariable("productId") Long productId) throws NotFoundException {
+         Optional<Product> product=productService.getProductById(productId);
+         if(product.isEmpty()){
+             throw new NotFoundException("No product found with product id: "+productId);
+
+         }
+         ResponseEntity<ProductRequestDto> productResponseEntity=new ResponseEntity<>(productService.deleteProduct(productId),HttpStatus.OK);
+         return  productResponseEntity;
     }
 
 
