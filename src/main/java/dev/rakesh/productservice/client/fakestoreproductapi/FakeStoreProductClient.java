@@ -2,6 +2,7 @@ package dev.rakesh.productservice.client.fakestoreproductapi;
 
 import dev.rakesh.productservice.dtos.CreateProductDto;
 import dev.rakesh.productservice.dtos.ProductRequestDto;
+import dev.rakesh.productservice.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpMethod;
@@ -22,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FakeStoreProductClient {
     private final RestTemplateBuilder restTemplateBuilder;
+    private final ProductRepository productRepository;
 
     //Generic RequestEntity
     public <T> ResponseEntity<T> requestForEntity(String url, HttpMethod httpMethod, @Nullable Object request, Class<T> responseType, Object... uriVariables) throws RestClientException {
@@ -54,6 +56,8 @@ public class FakeStoreProductClient {
                 CreateProductDto.class);
 
         CreateProductDto productDto = responseEntity.getBody();
+
+        //CreateProductDto productDto=productRepository.save(createProductDto);
         return productDto;
     }
 

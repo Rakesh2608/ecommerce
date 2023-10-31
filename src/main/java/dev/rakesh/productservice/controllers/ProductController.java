@@ -6,7 +6,11 @@ import dev.rakesh.productservice.dtos.ProductRequestDto;
 import dev.rakesh.productservice.dtos.ProductResponseDto;
 import dev.rakesh.productservice.exceptions.NotFoundException;
 import dev.rakesh.productservice.model.Product;
+import dev.rakesh.productservice.repositories.CategoryRepository;
+import dev.rakesh.productservice.repositories.ProductRepository;
+import dev.rakesh.productservice.services.FakeStoreProductServiceImpl;
 import dev.rakesh.productservice.services.ProductService;
+import dev.rakesh.productservice.services.SelfProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,18 +27,34 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProductController {
 
-    private final ProductService productService;
+    private final FakeStoreProductServiceImpl productService;
+    private final SelfProductService selfProductService;
+
 //   public ProductController(ProductService productService){
 //       this.productService=productService;
 //   }
 
     @GetMapping
     public List<ProductResponseDto> getAllProducts() {
-        List<Product> products=productService.getAllProducts();
+        //List<Product> products=productService.getAllProducts();
+        List<Product> products=selfProductService.getAllProducts();
         List<ProductResponseDto> productResponseDtoList=new ArrayList<>();
         for(Product product:products){
             productResponseDtoList.add(ConvertToResponseDto(product));
         }
+//        Product product=new Product();
+//        Category category=new Category();
+//        category.setName("electronics");
+//        //categoryRepository.save(category);
+//        product.setTitle("Phone");
+//        product.setPrice(BigDecimal.valueOf((1000)));
+//        product.setDescription("Good phone");
+//        product.setImageUrl("newImage.jpg");
+//        product.setCategory(category);
+//        Rating rating=new Rating();
+//        rating.setRate(4.5);
+//        product.setRating(rating);
+//        productRepository.save(product);
         return productResponseDtoList;
     }
 
@@ -58,7 +78,8 @@ public class ProductController {
                 "auth-token", "no-access"
         );
 
-        Optional<Product> product=productService.getProductById(productId);
+        //Optional<Product> product=productService.getProductById(productId);
+        Optional<Product> product=selfProductService.getProductById(productId);
         if(product.isEmpty()){
             throw new NotFoundException("No product found with productId:"+productId);
         }
@@ -87,8 +108,7 @@ public class ProductController {
     public ResponseEntity<Product> createProduct(
             @RequestBody CreateProductDto newProductRequestDto) {
         ResponseEntity<Product> productResponseEntity = new
-                ResponseEntity<>(productService.createProduct(newProductRequestDto), HttpStatus.OK);
-
+                ResponseEntity<>(selfProductService.createProduct(newProductRequestDto), HttpStatus.OK);
         return productResponseEntity;
     }
 

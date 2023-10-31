@@ -88,6 +88,8 @@ public class FakeStoreProductServiceImpl implements ProductService {
 //        ProductRequestDto productDto = responseEntity.getBody();
 
         CreateProductDto productDto = fakeStoreProductClient.createProduct(createProductDto);
+
+
         return getProductFromCreateDto(productDto);
         
 
