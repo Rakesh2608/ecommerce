@@ -1,11 +1,12 @@
 package dev.rakesh.productservice.repositories;
 
-import dev.rakesh.productservice.dtos.CreateProductDto;
 import dev.rakesh.productservice.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
 
+@Repository
 public interface ProductRepository extends JpaRepository<Product,Long> {
-    //Product save (CreateProductDto createProductDto);
-
+        List<Product> findByCategory_Name(String categoryName);
 }

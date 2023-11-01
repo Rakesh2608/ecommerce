@@ -12,11 +12,13 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateProductDto {
-    private Long id;
+    private Long Id;
     private String title;
     private BigDecimal price;
     private String description;
     private String image;
     private String category;
+    private double ratingRate;
+    private Integer ratingCount;
 
 }

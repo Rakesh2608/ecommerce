@@ -116,10 +116,8 @@ public class FakeStoreProductServiceImpl implements ProductService {
 
 
     @Override
-    public ProductRequestDto deleteProduct(Long productId) {
+    public void deleteProduct(Long productId) {
         ProductRequestDto productRequestDto = fakeStoreProductClient.deleteProduct(productId);
-
-        return productRequestDto;
     }
 
 

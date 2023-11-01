@@ -1,7 +1,6 @@
 package dev.rakesh.productservice.services;
 
 import dev.rakesh.productservice.dtos.CreateProductDto;
-import dev.rakesh.productservice.dtos.ProductRequestDto;
 import dev.rakesh.productservice.model.Product;
 
 import java.util.List;
@@ -12,5 +11,5 @@ public interface ProductService {
     Optional<Product> getProductById(Long productId);
     Product createProduct(CreateProductDto createProductDto);
     Product updateProduct(Long productId, CreateProductDto newProductRequestDto);
-    ProductRequestDto deleteProduct(Long productId);
+    void deleteProduct(Long productId);
 }

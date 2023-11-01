@@ -1,6 +1,7 @@
 package dev.rakesh.productservice.services;
 
 import dev.rakesh.productservice.client.fakestorecategoryapi.FakeStoreCategoryClient;
+import dev.rakesh.productservice.dtos.CategoryDto;
 import dev.rakesh.productservice.dtos.ProductRequestDto;
 import dev.rakesh.productservice.model.Category;
 import dev.rakesh.productservice.model.Product;
@@ -16,6 +17,12 @@ import java.util.List;
 public class FakeStoreCategoryServiceImpl implements CategoryService{
 
     private final FakeStoreCategoryClient fakeStoreCategoryClient;
+
+    @Override
+    public Category createCategory(CategoryDto categoryDto) {
+        return null;
+    }
+
     @Override
     public List<Category> getAllCategories() {
         return fakeStoreCategoryClient.getAllCategory();
