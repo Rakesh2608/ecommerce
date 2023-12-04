@@ -1,15 +1,22 @@
 package dev.rakesh.productservice.controllers;
 
+import dev.rakesh.productservice.client.AuthClient.AuthenticationClient;
+import dev.rakesh.productservice.client.AuthClient.dtos.ValidateResponseDto;
+import dev.rakesh.productservice.client.AuthClient.models.Role;
+import dev.rakesh.productservice.client.AuthClient.models.SessionStatus;
 import dev.rakesh.productservice.dtos.CreateProductDto;
 import dev.rakesh.productservice.dtos.GetSingleProductResponseDto;
 import dev.rakesh.productservice.dtos.ProductResponseDto;
 import dev.rakesh.productservice.exceptions.NotFoundException;
 import dev.rakesh.productservice.model.Product;
 import dev.rakesh.productservice.model.Rating;
+import dev.rakesh.productservice.services.FakeStoreProductServiceImpl;
+import dev.rakesh.productservice.services.ProductService;
 import dev.rakesh.productservice.services.SelfProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
@@ -24,21 +31,43 @@ import java.util.Optional;
 public class ProductController {
 
     //private final FakeStoreProductServiceImpl productService;
-    private final SelfProductService productService;
-
+    private final ProductService productService;
+    //private final SelfProductService productService;
+    private final AuthenticationClient authenticationClient;
 //   public ProductController(ProductService productService){
 //       this.productService=productService;
 //   }
 
     //Fetching all products.
     @GetMapping
-    public List<ProductResponseDto> getAllProducts() {
+    public ResponseEntity<List<ProductResponseDto>> getAllProducts(@Nullable @RequestHeader("AUTH_TOKEN")String token ,@Nullable @RequestHeader("USER_ID") Long userId ) {
+        if(token==null||userId==null){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        //Checking if token is valid...
+        ValidateResponseDto validateResponseDto= authenticationClient.validate(token,userId);
+        if(validateResponseDto.getSessionStatus().equals(SessionStatus.INVALID)){
+            return  new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        //Check if user role is admin or not
+        boolean isAdmin=false;
+        for(Role role:validateResponseDto.getUserDto().getRoles()){
+            if (role.getName().equals("admin")) {
+                isAdmin = true;
+                break;
+            }
+        }
+        if(!isAdmin){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
         List<Product> products=productService.getAllProducts();
         List<ProductResponseDto> productResponseDtoList=new ArrayList<>();
         for(Product product:products){
             productResponseDtoList.add(ConvertToResponseDto(product));
         }
-        return productResponseDtoList;
+        return new ResponseEntity<>(productResponseDtoList,HttpStatus.OK);
     }
 
     private ProductResponseDto ConvertToResponseDto(Product product) {

@@ -8,6 +8,7 @@ import dev.rakesh.productservice.model.Product;
 import dev.rakesh.productservice.model.Rating;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -24,6 +25,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Primary
 public class FakeStoreProductServiceImpl implements ProductService {
 
     private final RestTemplateBuilder restTemplateBuilder;
