@@ -41,26 +41,26 @@ public class ProductController {
     //Fetching all products.
     @GetMapping
     public ResponseEntity<List<ProductResponseDto>> getAllProducts(@Nullable @RequestHeader("AUTH_TOKEN")String token ,@Nullable @RequestHeader("USER_ID") Long userId ) {
-        if(token==null||userId==null){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-        //Checking if token is valid...
-        ValidateResponseDto validateResponseDto= authenticationClient.validate(token,userId);
-        if(validateResponseDto.getSessionStatus().equals(SessionStatus.INVALID)){
-            return  new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
-        //Check if user role is admin or not
-        boolean isAdmin=false;
-        for(Role role:validateResponseDto.getUserDto().getRoles()){
-            if (role.getName().equals("admin")) {
-                isAdmin = true;
-                break;
-            }
-        }
-        if(!isAdmin){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+//        if(token==null||userId==null){
+//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+//        }
+//        //Checking if token is valid...
+//        ValidateResponseDto validateResponseDto= authenticationClient.validate(token,userId);
+//        if(validateResponseDto.getSessionStatus().equals(SessionStatus.INVALID)){
+//            return  new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+//        }
+//
+//        //Check if user role is admin or not
+//        boolean isAdmin=false;
+//        for(Role role:validateResponseDto.getUserDto().getRoles()){
+//            if (role.getName().equals("admin")) {
+//                isAdmin = true;
+//                break;
+//            }
+//        }
+//        if(!isAdmin){
+//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+//        }
 
         List<Product> products=productService.getAllProducts();
         List<ProductResponseDto> productResponseDtoList=new ArrayList<>();
